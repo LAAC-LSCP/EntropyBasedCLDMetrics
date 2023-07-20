@@ -34,9 +34,9 @@ def prepare(childes_folder: Path, output_folder: Path):
                         for utterance, timemark in zip(utterances, timemarks):
                             age_utterances.append((target_speaker, utterance, timemark))
             for idx, (target_speaker, utterance, timemark) in enumerate(age_utterances):
-                utterance_id = f"{filename}_{target_speaker}_{idx:05d}"
                 onset, offset = timemark.strip().split("\t")
                 orthographic = utterance.strip()
+                utterance_id = f"{filename}_{target_speaker}_{idx:05d}_{onset}_{offset}"
                 # Important logic here:
                 # a) For training (thomas), we necessary need transcription (entropy) and speech pairs.
                 # So we have to keep only utterances for which we have transcription AND speech.

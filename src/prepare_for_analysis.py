@@ -10,6 +10,7 @@ def get_df(results_csv: str, informations_file: str):
     informations_df = []
     with open(informations_file, "r") as informations:
         for line in informations:
+            print(line)
             utterance_id, child, speaker, age = line.split("\t")
             informations_df.append({
                 "utterance_id": utterance_id,
@@ -30,7 +31,7 @@ def main():
     output_folder = Path("results")
     output_folder.mkdir(exist_ok=True, parents=True)
     output_filename = Path(args.input_csv).stem
-    results = get_df(args.input_csv, "data/Providence/model_inputs/Providence.infos")
+    results = get_df(args.input_csv, "data/cougar/model_inputs/cougar.infos")
     results.to_csv(output_folder / f"{output_filename}_analysis.csv")
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ import kenlm
 import h5py
 import soundfile as sf
 from tqdm import tqdm
+import os
 
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
