@@ -62,6 +62,10 @@ def main():
                         "--model",
                         required=True,
                         help="The trained model to use")
+    parser.add_argument("-o",
+                        "--output_filename",
+                        required=True,
+                        help="Output filename")
     
     args = parser.parse_args()
     with open(args.config, "r") as config_file:
@@ -78,7 +82,7 @@ def main():
                                  model_checkpoint=args.model,
                                  data_loader=data_loader,
                                  batch_size=config["batch_size"])
-    output_filename = Path(args.model).stem
+    output_filename = Path(args.output_filename)
     results_df.to_csv(output_folder / f"{output_filename}.csv")
 
 if __name__ == "__main__":

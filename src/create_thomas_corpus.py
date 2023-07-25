@@ -18,16 +18,22 @@ def get_data(cha_folder: Path) -> dict:
         needed_columns = zip(dataframe["transcription"], dataframe["segment_onset"],
                              dataframe["segment_offset"], dataframe["speaker_role"])
         ages = set(dataframe["raw_filename"])
+        print('\nages = ',ages)
         assert len(ages) == 1, f"Need to be one file per age. Instead, the csv {csv} has {len(ages)} ages."
         filename = list(ages)[0]
+        print('\n filename= ',filename)
         cha_file = cha_folder / "raw" / filename
+        print('\n cha file \n', cha_file)
         cha = pylangacq.read_chat(str(cha_file))
+        print('\n cha: \n', cha)
         age = cha.ages(months=True)[0]
+        print('\nage: ', age, 'raw age: ', cha_file.stem)
         data = {"age" : age, "raw_age": cha_file.stem, "data": defaultdict(list)}
         for utterance_raw, onset, offset, speaker_role in needed_columns:
             utterance = pylangacq.chat._clean_utterance(utterance_raw)
             cleaned = CLEANER.clean(utterance)
             data["data"][speaker_role].append((utterance_raw, cleaned, onset, offset))
+        
         yield data
 
 def write_utterances(utterances: str, output_file: Path) -> None:

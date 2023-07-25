@@ -21,8 +21,10 @@ def get_data(cha_folder: Path) -> dict:
         needed_columns = zip(dataframe["transcription"], dataframe["segment_onset"],
                              dataframe["segment_offset"], dataframe["speaker_role"])
         ages = set(dataframe["raw_filename"])
+        print(ages)
         assert len(ages) == 1, f"Need to be one file per age. Instead, the csv {csv} has {len(ages)} ages."
         filename = list(ages)[0]
+        print(filename)
         cha_file = cha_folder / "an1/raw" / filename
         cha = pylangacq.read_chat(str(cha_file))
         age = cha.ages(months=True)[0]
