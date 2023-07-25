@@ -28,7 +28,7 @@ Librispeech : https://www.openslr.org/12
 Clone this github repository and move to it:
 
 ```bash
-git clone [https://github.com/yaya-sy/EntropyBasedCLDMetrics.git](https://github.com/LAAC-LSCP/EntropyBasedCLDMetrics.git)
+git clone https://github.com/LAAC-LSCP/EntropyBasedCLDMetrics.git
 cd EntropyBasedCLDMetrics
 ```
 
