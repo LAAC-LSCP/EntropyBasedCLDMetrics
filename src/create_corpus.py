@@ -13,19 +13,40 @@ import os
 CLEANER = UtterancesCleaner("extra/markers.json")
 
 def get_data(child_corpus, annotation_campaign):
+    """
+    The following function obtains the following information from annotations, recordings & children & yields a
+    dictionary;
+    
+    - segment_onset
+    - segment_offset
+    - speaker_role
+    - transcription
+    - age
+    - recording_filename
+    
+    Args:
+        child_corpus (Path): Path to Child corpus
+        annotation_campaign (str): Annotation campaign corresponding to the Child project to be used for experiment 
+
+    Yields:
+        dict: { age, data : {segment_onset, segment_offset, cleaned_utterance, speaker_role}, recording_filename}
+    """
     
     children = pd.read_csv(f"{child_corpus}/metadata/children.csv")
     recordings = pd.read_csv(f"{child_corpus}/metadata/recordings.csv")
     
+    #read the child corpus using ChildProject
     project = ChildProject(child_corpus)
     am = AnnotationManager(project)
     am.read()
     
+    #extract the appropriate annotation campaign set based on user argument
     annotation = am.annotations[am.annotations['set'].str.startswith(annotation_campaign)]
     annotation_set = annotation['set'].unique()[0]
     
     annotation_files = annotation['annotation_filename'].unique()
     
+    #process each annotation file
     for annotation_file in tqdm(annotation_files):
         
         path = f"{child_corpus}/annotations/{annotation_set}/converted/{annotation_file}"
