@@ -28,7 +28,7 @@ Librispeech : https://www.openslr.org/12
 Clone this github repository and move to it:
 
 ```bash
-git clone https://github.com/yaya-sy/EntropyBasedCLDMetrics.git
+git clone https://github.com/yaya-sy/EntropyBasedCLDMetrics.gi
 cd EntropyBasedCLDMetrics
 ```
 
@@ -99,10 +99,10 @@ datalad get recordings/raw/*
 Once installed, you can run this command to extract utterances, their cleaned version and the timemarks:
 
 ```shell
-python src/create_thomas_corpus.py -c [PATH_TO_THOMAS_CORPUS] -o data/Thomas
+python src/create_corpus.py -c [PATH_TO_CHILD_CORPUS] -a [ANNOTATION_CAMPAIGN] -o data/[CHILD_NAME]
 ```
 
-Where `[PATH_TO_THOMAS_CORPUS]` is the path to the installed Thomas corpus.
+Where `[PATH_TO_CORPUS]` is the path to the installed Child project.
 
 In the created folder, `orthographic` contains the raw annotations without cleaning. The `cleaned` folder contains the cleaned version of the annotations. And `timemarks` contains the onsets and offsets of each utterance in the audios. All of these are aligned, meaning that the _i<sup>th</sup>_ line of each file corresponds to the _i<sup>th</sup>_ line of the other files.
 
@@ -111,8 +111,8 @@ The `filename.txt` files contain the raw filenames and `months.txt` files contai
 ### Prepare inputs for the regression model
 
 ```shell
-> python src/prepare_childes_corpus.py -i data/Thomas/
-> python src/prepare_input_files.py -c data/Thomas/ -a [AUDIO_FOLDER] -m checkpoints/librispeech_360.arpa
+> python src/prepare_childes_corpus.py -i data/[CHILD_NAME]/
+> python src/prepare_input_files.py -c data/[CHILD_NAME]/ -a [AUDIO_FOLDER] -m checkpoints/librispeech_360.arpa
 ```
 
 Where `[AUDIO_FOLDER]` is the path to the audio folder of the data installed from the GIN repository. The audio folder is `recordings/raw/`.
