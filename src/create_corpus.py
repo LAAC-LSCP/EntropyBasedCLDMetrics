@@ -32,13 +32,14 @@ def get_data(child_corpus, annotation_campaign):
         dict: { age, data : {segment_onset, segment_offset, cleaned_utterance, speaker_role}, recording_filename}
     """
     
-    children = pd.read_csv(f"{child_corpus}/metadata/children.csv")
-    recordings = pd.read_csv(f"{child_corpus}/metadata/recordings.csv")
-    
     #read the child corpus using ChildProject
     project = ChildProject(child_corpus)
+    project.read()
     am = AnnotationManager(project)
     am.read()
+    
+    children = project.children
+    recordings = project.recordings
     
     #extract the appropriate annotation campaign set based on user argument
     annotation = am.annotations[am.annotations['set'].str.startswith(annotation_campaign)]
