@@ -60,7 +60,7 @@ def main():
                         help="The yaml config (the same used during the training).")
     parser.add_argument("-m",
                         "--model",
-                        required=True,
+                        required=False,
                         help="The trained model to use")
     parser.add_argument("-o",
                         "--output_filename",
