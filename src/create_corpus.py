@@ -29,8 +29,12 @@ def get_data(child_corpus, annotation_campaign):
         annotation_campaign (str): Annotation campaign corresponding to the Child project to be used for experiment 
 
     Yields:
-        dict: { age, data : {segment_onset, segment_offset, cleaned_utterance, speaker_role}, recording_filename}
+        dict: { age, data : {segment_onset, segment_offset, cleaned_utterance, speaker_role}, recording_filename, child_id}
     """
+    child_name = child_corpus.split('/')[-1]
+    # df = pd.read_csv('/scratch2/sdas/DATA/longforms-lite/metadata/annotations_all_new.csv')
+    # df = df[df['dataset']==child_name]
+    # df = df[df['set'].str.startswith(annotation_campaign)]
     
     #read the child corpus using ChildProject
     project = ChildProject(child_corpus)
@@ -56,16 +60,23 @@ def get_data(child_corpus, annotation_campaign):
         needed_columns = zip(annots["transcription"], annots["segment_onset"],
                              annots["segment_offset"], annots["speaker_role"])
         
+        # shortaudio_filename = df[df['annotation_filename'] == annotation_file]['shortaudio_filename'].values[0]
+        # range_onset = df[df['annotation_filename'] == annotation_file]['range_onset'].values[0]
+        
+        
         recording_filename = annotation[annotation['annotation_filename'] == annotation_file]['recording_filename'].values[0]
         child_id = recordings[recordings['recording_filename'] == recording_filename]['child_id'].values[0]
         recording_date = datetime.strptime(recordings[recordings['recording_filename'] == recording_filename]['date_iso'].values[0], "%Y-%m-%d")
         DOB = datetime.strptime(children[children['child_id'] == child_id]['child_dob'].values[0], "%Y-%m-%d")
         age = (recording_date - DOB).days//30
         
-        data = {"age" : age, "data": defaultdict(list), "filename": recording_filename.split('.')[0]}
+        #data = {"age" : age, "data": defaultdict(list), "filename": recording_filename.split('.')[0]}
+        data = {"age" : age, "data": defaultdict(list), "filename": recording_filename.split('.')[0], 'child': child_id}
         for utterance_raw, onset, offset, speaker_role in needed_columns:
             utterance = pylangacq.chat._clean_utterance(utterance_raw)
             cleaned = CLEANER.clean(utterance)
+            # new_onset = onset - range_onset
+            # new_offset = offset - range_onset
             data["data"][speaker_role].append((utterance_raw, cleaned, onset, offset))
         yield data
 
@@ -77,18 +88,21 @@ def write_utterances(utterances, output_file):
 
 def make_folder(childes_corpus, annotation_campaign, output_folder):
     """
-    Creates the folders for the different utterances types:\
+    Creates the folders for the different utterances types:
     orthographic, cleaned, timemarks.
     """
     child_name = childes_corpus.split('/')[-1]
     print(child_name)
     allowed_speakers = {"Mother", "Target_Child"}
     for data in get_data(childes_corpus, annotation_campaign):
-        age_orthographic_folder = f"{output_folder}/orthographic/{child_name}/{data['filename']}"
+        #age_orthographic_folder = f"{output_folder}/orthographic/{child_name}/{data['filename']}"
+        age_orthographic_folder = f"{output_folder}/orthographic/{data['child']}/{data['filename']}"
         os.makedirs(age_orthographic_folder, exist_ok=True)
-        age_cleaned_folder = f"{output_folder}/cleaned/{child_name}/{data['filename']}"
+        #age_cleaned_folder = f"{output_folder}/cleaned/{child_name}/{data['filename']}"
+        age_cleaned_folder = f"{output_folder}/cleaned/{data['child']}/{data['filename']}"
         os.makedirs(age_cleaned_folder, exist_ok=True)
-        age_timemarks_folder = f"{output_folder}/timemarks/{child_name}/{data['filename']}"
+        #age_timemarks_folder = f"{output_folder}/timemarks/{child_name}/{data['filename']}"
+        age_timemarks_folder = f"{output_folder}/timemarks/{data['child']}/{data['filename']}"
         os.makedirs(age_timemarks_folder, exist_ok=True)
 
         for speaker_role in data["data"]:
