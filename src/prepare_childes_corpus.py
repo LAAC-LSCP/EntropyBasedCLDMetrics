@@ -36,7 +36,8 @@ def prepare(childes_folder: Path, output_folder: Path):
             for idx, (target_speaker, utterance, timemark) in enumerate(age_utterances):
                 onset, offset = timemark.strip().split("\t")
                 orthographic = utterance.strip()
-                utterance_id = f"{filename}_{target_speaker}_{idx:05d}_{onset}_{offset}"
+                #utterance_id = f"{filename}_{target_speaker}_{idx:05d}_{onset}_{offset}"
+                utterance_id = f"{filename}_{target_speaker}_{idx:05d}"
                 # Important logic here:
                 # a) For training (thomas), we necessary need transcription (entropy) and speech pairs.
                 # So we have to keep only utterances for which we have transcription AND speech.
@@ -44,7 +45,8 @@ def prepare(childes_folder: Path, output_folder: Path):
                 # In this case, we will keep the speech for predicting the entropy using the model even if this speech is not transcribed.
                 if not orthographic and childes_folder.stem == "Thomas":
                     continue
-                path = f"{child_name}/{filename}" if len(children) > 1 else filename
+                #path = f"{child_name}/{filename}" if len(children) > 1 else filename
+                path = filename
                 utterances_paths.append(f"{utterance_id}\t{path}.wav\t{onset}\t{offset}")
                 utterances_segments.append(f"{utterance_id}\t{orthographic}")
                 utterances_informations.append(f"{utterance_id}\t{child_name}\t{target_speaker}\t{months}")
