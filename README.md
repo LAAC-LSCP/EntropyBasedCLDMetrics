@@ -193,10 +193,10 @@ This will create a csv file named `Librispeech_360h.csv` in the folder `results`
 ## Experiment 2A: Entropy predictions using Thomas test data
 
 ```bash
-python src/compute_entropies_whisper.py -c configs/test.yaml -m checkpoints/Thomas_30h_Librispeech360_en.pt
+python src/compute_entropies_whisper.py -c configs/test.yaml -m checkpoints/Thomas_30h_Librispeech360_en.pt -o [OUTPUT_CSV]
 ```
 
-This will create a csv file named `Thomas_30h_Librispeech360_en.csv` in the folder `results`.
+This will create a csv file named `[OUTPUT_CSV].csv` in the folder `results`.
 
 ## Experiment 2B: Entropy predictions using Librispeech test data
 
@@ -237,10 +237,10 @@ This will create a csv file named `HuBERT-tts_entropy_ngram-2-merge-False_mmap_a
 ### Experiment 2A
 
 ```bash
-python src/prepare_for_analysis.py -i results/Thomas_30h_Librispeech_en.csv
+python src/prepare_for_analysis.py -i results/[OUTPUT_CSV].csv
 ```
 
-This will create a csv file named `Thomas_30h_Librispeech_en_analysis.csv` in the folder `results`.
+This will create a csv file named `[OUTPUT_CSV]_analysis.csv` in the folder `results`.
 
 ### Experiment 2B
 
