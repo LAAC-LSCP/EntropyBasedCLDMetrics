@@ -18,25 +18,25 @@ library(svglite)
 # Read the data
 
 ```{r}
-experiment_1A <- read.csv("../results/Librispeech_360h_analysis.csv")
-experiment_1B <- read.csv("../results/HuBERT_nat.csv")
-experiment_1C <- read.csv("../results/HuBERT_tts.csv")
-experiment_2A <- read.csv("../results/Thomas_30h_Librispeech_en_analysis.csv")
-experiment_2B <- read.csv("../results/Librispeech_100h_Librispeech360_en_analysis.csv")
+#experiment_1A <- read.csv("../results/Librispeech_360h_analysis.csv")
+#experiment_1B <- read.csv("../results/HuBERT_nat.csv")
+#experiment_1C <- read.csv("../results/HuBERT_tts.csv")
+experiment_2A <- read.csv("/scratch2/sdas/modules/EntropyBasedCLDMetrics-laac/results/denoised_aged_cougar_thomas_30h_en_analysis.csv")
+#experiment_2B <- read.csv("../results/Librispeech_100h_Librispeech360_en_analysis.csv")
 ```
 
 # Normalization
 
 ```{r}
-experiment_1A$age <- (experiment_1A$age - min(experiment_1A$age)) / sd(experiment_1A$age)
+#experiment_1A$age <- (experiment_1A$age - min(experiment_1A$age)) / sd(experiment_1A$age)
 
-experiment_1B$age <- (experiment_1B$age - min(experiment_1B$age)) / sd(experiment_1B$age)
+#experiment_1B$age <- (experiment_1B$age - min(experiment_1B$age)) / sd(experiment_1B$age)
 
-experiment_1C$age <- (experiment_1C$age - min(experiment_1C$age)) / sd(experiment_1C$age)
+#experiment_1C$age <- (experiment_1C$age - min(experiment_1C$age)) / sd(experiment_1C$age)
 
 experiment_2A$age <- (experiment_2A$age - min(experiment_2A$age)) / sd(experiment_2A$age)
 
-experiment_2B$age <- (experiment_2B$age - min(experiment_2B$age)) / sd(experiment_2B$age)
+#experiment_2B$age <- (experiment_2B$age - min(experiment_2B$age)) / sd(experiment_2B$age)
 ```
 
 ## Experiment 1A
