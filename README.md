@@ -116,6 +116,7 @@ The `filename.txt` files contain the raw filenames and `months.txt` files contai
 ```
 
 Where `[AUDIO_FOLDER]` is the path to the audio folder of the data installed from the GIN repository. The audio folder is `recordings/raw/`.
+Please check the path to the audio_folder is the correct one. In the most recent update, the audio files are named as `corpus+'_'+recroding_filename`
 
 ## Pepare the data for Librispeech regression model (Experiment 2B)
 
