@@ -12,6 +12,7 @@ import h5py
 import soundfile as sf
 from tqdm import tqdm
 import os
+import gc
 
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -51,6 +52,7 @@ def h5_dataset(utterances_paths: Path, audio_folder: Path, output_folder: Path):
                 utterance = audio
             sorted_utterances.append((audio.shape[0], utterance_id))
             f.create_dataset(utterance_id, data=utterance)
+            gc.collect()
     sorted_utterances = sorted(sorted_utterances)
     _, ids = zip(*sorted_utterances)
     with open(output_folder / f"{utterances_paths.stem}.sorted", 'w') as sorted_paths_file:
