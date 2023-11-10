@@ -13,6 +13,7 @@ install.packages("dplyr")
 install.packages("tidyverse")
 install.packages("lme4")
 install.packages("svglite")
+install.packages("ggpubr")
 ```
 
 ```{r, include=FALSE}
@@ -21,24 +22,25 @@ library(dplyr)
 library(tidyverse)
 library(lme4)
 library(svglite)
+library(ggpubr)
 ```
 
 ```{r}
-experiment_1A <- read.csv("../results/Librispeech_360h_analysis.csv")
-experiment_1B <- read.csv("../results/HuBERT-nat_entropy_ngram-2-merge-False_mmap_analysis.csv")
-experiment_1C <- read.csv("../results/HuBERT-tts_entropy_ngram-2-merge-False_mmap_analysis.csv")
-experiment_2A <- read.csv("../results/Thomas_30h_Librispeech_en_analysis.csv")
+#experiment_1A <- read.csv("../results/Librispeech_360h_analysis.csv")
+#experiment_1B <- read.csv("../results/HuBERT-nat_entropy_ngram-2-merge-False_mmap_analysis.csv")
+#experiment_1C <- read.csv("../results/HuBERT-tts_entropy_ngram-2-merge-False_mmap_analysis.csv")
+experiment_2A <- read.csv("/scratch2/sdas/modules/EntropyBasedCLDMetrics-laac/results/multilingual_thomas_30h_en_analysis_2.csv")
 ```
 
 ```{r}
 cbp1 <- c("#D55E00", "#000000", "#CC79A7")
 scaleFUN <- function(x) sprintf("%.1f", x)
 
-plot <- function(data, limits){
+plot <- function(data, limits, cbp_speaker, cbp_corpus){
   plt <- data %>%
       mutate(speaker = fct_reorder2(speaker, age, entropy)) %>%
       ggplot() + 
-      aes(x=age, y=entropy, color=speaker) +
+      aes(x=age, y=entropy, shape=speaker, color=corpus) +
       geom_point(aes(x = age, y = entropy),
                  size = .65) +
       geom_smooth(linetype = "solid",
@@ -54,36 +56,61 @@ plot <- function(data, limits){
             legend.title = element_blank(),
             text = element_text(size = 16)) +
       scale_color_manual(values = cbp1) +
+      scale_shape_manual(values = cbp_speaker) +
+      scale_color_manual(values = cbp_corpus) +
       scale_fill_discrete(limits = c("Target_Child", "Mother")) +
       scale_y_continuous(labels=scaleFUN, limits = limits) +
       ylab("Entropy") +
       xlab("Age (months)")
   return(plt)
 }
+
+cbp_speaker <- c("Target_Child" = "blue", "Mother" = "red")
+cbp_corpus <- c("Corpus1" = "green", "Corpus2" = "purple")
 ```
 
 ```{r}
-plot_exp1A <- plot(experiment_1A, c(2, 8))
-plot_exp1B <- plot(experiment_1B, c(2, 8))
-plot_exp1C <- plot(experiment_1C, c(2.7, 3.8))
-plot_exp2A <- plot(experiment_2A, c(2.7, 3.8))
+#plot_exp1A <- plot(experiment_1A, c(2, 8))
+#plot_exp1B <- plot(experiment_1B, c(2, 8))
+#plot_exp1C <- plot(experiment_1C, c(2.7, 3.8))
+plot_exp2A <- plot(experiment_2A, c(2.7, 3.8), cbp_speaker, cbp_corpus)
 ```
 
 ```{r}
-plt <- ggarrange(plot_exp1A + rremove("xlab") + rremove("x.text"),
-                 plot_exp1B + rremove("ylab") + rremove("y.text") + rremove("xlab") + rremove("x.text"),
-                 plot_exp1C,
-                 plot_exp2A + rremove("ylab") + rremove("y.text"),
-                 labels = c("1A", "1B", "1C", "2A"),
-                 hjust = c(-13.8, -11.8, -14.0, -11.8),
-                 heights = c(4, 4, 4, 4),
-                 widths = c(4.6, 4, 4.6, 4),
+model <- lm(entropy~age, data = experiment_2A)
+model_summary <- tidy(model)
+slope <- model_summary$estimate[2]  # Slope coefficient
+intercept <- model_summary$estimate[1]
+
+ci_data <- confint(model)
+ci_slope <- ci_data[2, ]  # Confidence interval for slope
+ci_intercept <- ci_data[1, ]
+
+slope_annotation <- paste("Slope:", round(slope, 2), "\nCI:", round(ci_slope, 2))
+intercept_annotation <- paste("Intercept:", round(intercept, 2), "\nCI:", round(ci_intercept, 2))
+```
+
+```{r}
+plt <- ggarrange(#plot_exp1A + rremove("xlab") + rremove("x.text"),
+                 #plot_exp1B + rremove("ylab") + rremove("y.text") + rremove("xlab") + rremove("x.text"),
+                 #plot_exp1C,
+                 plot_exp2A,
+                 labels = c("2A"),
+                 hjust = c(-11.8),
+                 heights = c(4),
+                 widths = c(4),
                  align = "h",
-                 nrow = 2, ncol = 2, common.legend = TRUE, legend="bottom")
+                 nrow = 1, ncol = 1, common.legend = TRUE, legend="bottom")
 ```
 ```{r}
 plt
+slope
+intercept
+ci_slope
+ci_intercept
+ci_data
 ```
+
 
 ```{r mkdir, engine='bash'}
 # We will save the plot in this folder
@@ -92,7 +119,7 @@ mkdir ../plots
 
 
 ```{r}
-ggsave("../plots/results_1A_1B_1C_2A_scaled.png", plot = plt, width = 8, height = 7, bg="white")
+ggsave("../plots/results_2A_lyon.png", plot = plt, width = 8, height = 7, bg="white")
 ```
 
 
