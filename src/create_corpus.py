@@ -57,21 +57,29 @@ def get_data(child_corpus, annotation_campaign):
         path = f"{child_corpus}/annotations/{annotation_set}/converted/{annotation_file}"
         annots = pd.read_csv(path)
         
-        needed_columns = zip(annots["transcription"], annots["segment_onset"],
-                             annots["segment_offset"], annots["speaker_role"])
+        if "transcription" not in annots.columns:
+            annots["transcription"] = ''
+        
+        needed_columns = zip(annots["transcription"], annots["segment_onset"],annots["segment_offset"], annots["speaker_type"])
         
         # shortaudio_filename = df[df['annotation_filename'] == annotation_file]['shortaudio_filename'].values[0]
         # range_onset = df[df['annotation_filename'] == annotation_file]['range_onset'].values[0]
         
-        
         recording_filename = annotation[annotation['annotation_filename'] == annotation_file]['recording_filename'].values[0]
         child_id = recordings[recordings['recording_filename'] == recording_filename]['child_id'].values[0]
-        recording_date = datetime.strptime(recordings[recordings['recording_filename'] == recording_filename]['date_iso'].values[0], "%Y-%m-%d")
+
+        recording_date = recordings[recordings['recording_filename'] == recording_filename]['date_iso'].values[0]
+
+        if recording_date == 'NA':
+            continue
+        else:
+            recording_date = datetime.strptime(recording_date, "%Y-%m-%d")
+            
         DOB = datetime.strptime(children[children['child_id'] == child_id]['child_dob'].values[0], "%Y-%m-%d")
         age = (recording_date - DOB).days//30
         
         #data = {"age" : age, "data": defaultdict(list), "filename": recording_filename.split('.')[0]}
-        data = {"age" : age, "data": defaultdict(list), "filename": recording_filename.split('.')[0], 'child': child_id}
+        data = {"age" : age, "data": defaultdict(list), "filename": child_name+'_'+recording_filename.split('.')[0], 'child': child_name+'_'+str(child_id)}
         for utterance_raw, onset, offset, speaker_role in needed_columns:
             utterance = pylangacq.chat._clean_utterance(utterance_raw)
             cleaned = CLEANER.clean(utterance)
@@ -92,8 +100,8 @@ def make_folder(childes_corpus, annotation_campaign, output_folder):
     orthographic, cleaned, timemarks.
     """
     child_name = childes_corpus.split('/')[-1]
-    print(child_name)
-    allowed_speakers = {"Mother", "Target_Child"}
+
+    allowed_speakers = {"FEM", "CHI"}
     for data in get_data(childes_corpus, annotation_campaign):
         #age_orthographic_folder = f"{output_folder}/orthographic/{child_name}/{data['filename']}"
         age_orthographic_folder = f"{output_folder}/orthographic/{data['child']}/{data['filename']}"
@@ -105,17 +113,17 @@ def make_folder(childes_corpus, annotation_campaign, output_folder):
         age_timemarks_folder = f"{output_folder}/timemarks/{data['child']}/{data['filename']}"
         os.makedirs(age_timemarks_folder, exist_ok=True)
 
-        for speaker_role in data["data"]:
-            speaker_data = list(zip(*data["data"][speaker_role]))
+        for speaker_type in data["data"]:
+            speaker_data = list(zip(*data["data"][speaker_type]))
             utterances, cleaneds, onsets, offsets = speaker_data
             timemarks = [f"{onset}\t{offset}" for onset, offset in zip(onsets, offsets)]
-            if speaker_role not in allowed_speakers:
+            if speaker_type not in allowed_speakers:
                 continue
             assert len(utterances) == len(cleaneds) == len(timemarks), "Mismatch in the data"
 
-            utterance_orthographic_output = f"{age_orthographic_folder}/{speaker_role}.orthographic"
-            utterance_cleaned_output = f"{age_cleaned_folder}/{speaker_role}.cleaned"
-            utterance_timemarks_output = f"{age_timemarks_folder}/{speaker_role}.timemarks"
+            utterance_orthographic_output = f"{age_orthographic_folder}/{speaker_type}.orthographic"
+            utterance_cleaned_output = f"{age_cleaned_folder}/{speaker_type}.cleaned"
+            utterance_timemarks_output = f"{age_timemarks_folder}/{speaker_type}.timemarks"
         
             write_utterances(utterances, utterance_orthographic_output)
             write_utterances(cleaneds, utterance_cleaned_output)
